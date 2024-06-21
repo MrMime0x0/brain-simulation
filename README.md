@@ -1,6 +1,6 @@
 <br>packages needed: Sqlite3/random/time/matplotlib</br>
 
-<br>Neuron activity shown on Brainstem after execting:</br>
+<br>Neuron activity shown on Brainstem after executing:</br>
 <img width="750" alt="Brainstem" src="https://github.com/MrMime0x0/brain-simulation/assets/136033068/78960ea3-6139-4f92-aa5f-4efe88397a2b">
 
 
