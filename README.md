@@ -13,7 +13,8 @@
 
 
 <br>GUI of brain-simulation script with a picture shown below:</br>
-(https://github.com/MrMime0x0/brain-simulation/assets/136033068/16cee6dd-eaab-48d6-9633-b19f9b52edc1)
+![GUI-BrainSim](https://github.com/MrMime0x0/brain-simulation/assets/136033068/fbc7cc14-b105-43d1-aa76-3fdb69d5b562)
+
 
 
 </br>This script simulates a brain and it simulates the Neurons on the Brainstem and Cerebellum and Cerebrum, It also uses Matplotlib to visualize the data of the Brainstem and Cerebellum and Cerebrum as shown with the pictures above.</br>
