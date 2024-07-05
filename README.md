@@ -12,11 +12,6 @@
 <img width="749" alt="Cerebrum" src="https://github.com/MrMime0x0/brain-simulation/assets/136033068/02a41412-8eb5-4ac6-a7f0-d85ef5404ff3">
 
 
-<br>GUI of brain-simulation script with a picture shown below:</br>
-![GUI-BrainSim](https://github.com/MrMime0x0/brain-simulation/assets/136033068/fbc7cc14-b105-43d1-aa76-3fdb69d5b562)
-
-
-
 </br>This script simulates a brain and it simulates the Neurons on the Brainstem and Cerebellum and Cerebrum, It also uses Matplotlib to visualize the data of the Brainstem and Cerebellum and Cerebrum as shown with the pictures above.</br>
 
 <br>With the GUI script you can show activity in the Brainstem and Cerebrum and Cerebellum.</br>
