@@ -1,6 +1,10 @@
 import sqlite3
 import random
 import time
+import threading
+import tkinter as tk
+from tkinter import ttk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 
 # Step 1: Create database tables
@@ -44,33 +48,89 @@ def retrieve_data(region):
     return data
 
 # Step 5: Plot the activity using Matplotlib
-def plot_activity(region, data):
+def plot_activity(region, data, ax, canvas):
     timestamps = [row[0] for row in data]
     neuron_ids = [row[1] for row in data]
     activity_levels = [row[2] for row in data]
 
-    plt.figure(figsize=(10, 6))
-    plt.scatter(timestamps, neuron_ids, c=activity_levels, cmap='viridis', marker='o')
-    plt.colorbar(label='Activity Level')
-    plt.title(f'{region.capitalize()} Neuron Activities')
-    plt.xlabel('Time')
-    plt.ylabel('Neuron ID')
-    plt.show()
+    ax.clear()
+    scatter = ax.scatter(timestamps, neuron_ids, c=activity_levels, cmap='viridis', marker='o')
+    plt.colorbar(scatter, ax=ax, label='Activity Level')
+    ax.set_title(f'{region.capitalize()} Neuron Activities')
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Neuron ID')
+    canvas.draw()
 
-# Main function to execute the simulation and visualization
+# GUI class to manage the application
+class BrainActivityApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Brain Activity Simulation")
+        self.region = tk.StringVar(value='cerebrum')
+        self.neuron_count = tk.IntVar(value=100)
+        self.duration = tk.IntVar(value=10)
+        self.interval = tk.DoubleVar(value=0.1)
+
+        self.create_widgets()
+
+    def create_widgets(self):
+        ttk.Label(self.root, text="Region:").grid(column=0, row=0, padx=10, pady=5)
+        ttk.Combobox(self.root, textvariable=self.region, values=['cerebrum', 'cerebellum', 'brainstem']).grid(column=1, row=0, padx=10, pady=5)
+
+        ttk.Label(self.root, text="Neuron Count:").grid(column=0, row=1, padx=10, pady=5)
+        ttk.Entry(self.root, textvariable=self.neuron_count).grid(column=1, row=1, padx=10, pady=5)
+
+        ttk.Label(self.root, text="Duration (s):").grid(column=0, row=2, padx=10, pady=5)
+        ttk.Entry(self.root, textvariable=self.duration).grid(column=1, row=2, padx=10, pady=5)
+
+        ttk.Label(self.root, text="Interval (s):").grid(column=0, row=3, padx=10, pady=5)
+        ttk.Entry(self.root, textvariable=self.interval).grid(column=1, row=3, padx=10, pady=5)
+
+        self.start_button = ttk.Button(self.root, text="Start Simulation", command=self.start_simulation)
+        self.start_button.grid(column=0, row=4, columnspan=2, pady=10)
+
+        self.stop_button = ttk.Button(self.root, text="Stop Simulation", command=self.stop_simulation, state='disabled')
+        self.stop_button.grid(column=0, row=5, columnspan=2, pady=10)
+
+        self.plot_button = ttk.Button(self.root, text="Plot Activity", command=self.plot_activity)
+        self.plot_button.grid(column=0, row=6, columnspan=2, pady=10)
+
+        self.fig, self.ax = plt.subplots(figsize=(10, 6))
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.root)
+        self.canvas.get_tk_widget().grid(column=0, row=7, columnspan=2)
+
+        self.simulation_thread = None
+        self.simulation_running = False
+
+    def start_simulation(self):
+        if self.simulation_thread is None or not self.simulation_thread.is_alive():
+            self.simulation_running = True
+            self.simulation_thread = threading.Thread(target=self.run_simulation)
+            self.simulation_thread.start()
+            self.start_button.config(state='disabled')
+            self.stop_button.config(state='normal')
+
+    def stop_simulation(self):
+        self.simulation_running = False
+        self.start_button.config(state='normal')
+        self.stop_button.config(state='disabled')
+
+    def run_simulation(self):
+        create_tables()
+        simulate_neurons(self.region.get(), self.neuron_count.get(), self.duration.get(), self.interval.get())
+        self.simulation_running = False
+        self.start_button.config(state='normal')
+        self.stop_button.config(state='disabled')
+
+    def plot_activity(self):
+        data = retrieve_data(self.region.get())
+        plot_activity(self.region.get(), data, self.ax, self.canvas)
+
+# Main function to execute the GUI application
 def main():
-    create_tables()
-    simulate_neurons('cerebrum', 100, 10, 0.1)  # Simulate 100 cerebrum neurons for 10 seconds
-    simulate_neurons('cerebellum', 50, 10, 0.1)  # Simulate 50 cerebellum neurons for 10 seconds
-    simulate_neurons('brainstem', 30, 10, 0.1)  # Simulate 30 brainstem neurons for 10 seconds
-
-    cerebrum_data = retrieve_data('cerebrum')
-    cerebellum_data = retrieve_data('cerebellum')
-    brainstem_data = retrieve_data('brainstem')
-
-    plot_activity('cerebrum', cerebrum_data)
-    plot_activity('cerebellum', cerebellum_data)
-    plot_activity('brainstem', brainstem_data)
+    root = tk.Tk()
+    app = BrainActivityApp(root)
+    root.mainloop()
 
 if __name__ == "__main__":
     main()
